@@ -6,9 +6,12 @@ void wifi_setup() {
 
   Serial.println(F("[WiFi] Wifi starting"));
   
-  WiFi.hostname(get_device_name());
+  WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  WiFi.hostname(get_device_name());
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
 }
 
 void wifi_connection_manager(){

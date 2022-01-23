@@ -330,10 +330,10 @@ int compare_em4100(char target[]) {
   Response response = read_em4100_sync();
   if(response.status) return -1;
 
-  for(int i=0; i<response.length; i++){
-    Serial.print(response.data[i],HEX);
-    Serial.println("");
-  }
+//  for(int i=0; i<response.length; i++){
+//    Serial.print(response.data[i],HEX);
+//    Serial.println("");
+//  }
   
   if(strncmp(target,response.data,response.length) == 0) return 0;
   return 1;

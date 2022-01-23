@@ -1,3 +1,4 @@
 String get_device_name(){
-  return String(DEVICE_TYPE) + "-" + String(DEVICE_ID);
+  String chip_id = String(ESP.getChipId(), HEX);
+  return String(DEVICE_TYPE) + "-" + chip_id;
 }

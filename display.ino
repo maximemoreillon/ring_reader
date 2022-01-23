@@ -6,7 +6,7 @@ void display_setup() {
   display.setTextAlignment(TEXT_ALIGN_CENTER);
   display.setBrightness(100);
   display.flipScreenVertically();
-  display.invertDisplay();
+  //display.invertDisplay();
   
   delay(10);
   display_nothing();
