@@ -21,7 +21,7 @@
 
 //Device info
 #define DEVICE_TYPE "door-reader"
-#define DEVICE_FIRMWARE_VERSION "0.1.7"
+#define DEVICE_FIRMWARE_VERSION "0.1.9"
 
 // IO
 #define RX_PIN D5
@@ -44,6 +44,8 @@
 // MQTT parameters
 #define MQTT_LOCK_COMMAND_TOPIC "lock/command"
 #define MQTT_LOCK_STATUS_TOPIC "lock/status"
+#define MQTT_LOCATION_TOPIC "location"
+
 #define MQTT_RETAIN true
 #define MQTT_RECONNECT_PERIOD 1000
 
@@ -112,6 +114,7 @@ void loop() {
         
         if(result == 0) {
           display_check();
+          MQTT_publish_location();
           MQTT_publish_toggle();
           buzzer_play_success();
         }
