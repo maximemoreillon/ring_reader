@@ -1,4 +1,4 @@
-# Ring reader (OLED display version)
+# Ring reader
 This is the firmware for my IoT RFID reader, intended to be used with 125kHz RFID rings.
 
 Project page: https://articles.maximemoreillon.com/articles/03878fe3-1eca-4f22-9521-0589ba076930
