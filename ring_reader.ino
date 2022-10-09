@@ -1,3 +1,7 @@
+/*
+ * Board type: Generic ESP8266
+ */
+
 // Libraries
 #include <SoftwareSerial.h>
 #include <ESP8266WiFi.h>
@@ -6,7 +10,6 @@
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include "SSD1306.h"
-#include <WiFiUdp.h> // Required for OTA
 
 // Config
 #include "credentials.h"
@@ -18,15 +21,14 @@
 
 //Device info
 #define DEVICE_TYPE "door-reader"
-#define DEVICE_ID "2"
-#define DEVICE_FIRMWARE_VERSION "0.1.3"
+#define DEVICE_FIRMWARE_VERSION "0.1.9"
 
 // IO
-#define RX_PIN 12 // D6
-#define TX_PIN 14 // D5
-#define SDA_PIN 5 
-#define SCL_PIN 4
-#define BUZZER_PIN 16
+#define RX_PIN D5
+#define TX_PIN D6
+#define SDA_PIN D2
+#define SCL_PIN D1
+#define BUZZER_PIN D8
 
 
 // Display parameters
@@ -42,6 +44,8 @@
 // MQTT parameters
 #define MQTT_LOCK_COMMAND_TOPIC "lock/command"
 #define MQTT_LOCK_STATUS_TOPIC "lock/status"
+#define MQTT_LOCATION_TOPIC "location"
+
 #define MQTT_RETAIN true
 #define MQTT_RECONNECT_PERIOD 1000
 
@@ -104,12 +108,13 @@ void loop() {
 
     int result = compare_em4100(code);
     if(result != -1){
-      Serial.println(result);
+      
       if(millis() - cooldown_start_time > COOLDOWN_DURATION){
         cooldown_start_time = millis();
         
         if(result == 0) {
           display_check();
+          MQTT_publish_location();
           MQTT_publish_toggle();
           buzzer_play_success();
         }
@@ -123,35 +128,5 @@ void loop() {
       }
     }
     
-    
-
-    
-//    read_word(CODE_ADDRESS);
-//    Response reader_response = get_reader_response_sync();
-//  
-//    if(reader_response.status == 0) {
-//      boolean match = compare_code(code, reader_response.data);
-//      if(millis() - cooldown_start_time > COOLDOWN_DURATION){
-//        cooldown_start_time = millis();
-//        
-//        if(match) {
-//          display_check();
-//          MQTT_publish_toggle();
-//          buzzer_play_success();
-//        }
-//        else {
-//          display_cross();
-//          buzzer_play_error();
-//          delay(1000);
-//          display_lock_state();
-//        }
-//        
-//      }
-//    }
-
-
   }
-
-
-  
 }

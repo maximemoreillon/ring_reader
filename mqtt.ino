@@ -58,6 +58,8 @@ void MQTT_connection_manager(){
 
 void MQTT_message_callback(char* topic, byte* payload, unsigned int len) {
 
+  // listening to lock states
+
   // Debugging
   Serial.print(F("[MQTT] message received on "));
   Serial.print(topic);
@@ -65,14 +67,39 @@ void MQTT_message_callback(char* topic, byte* payload, unsigned int len) {
   for (int i = 0; i < len; i++) Serial.print((char)payload[i]);
   Serial.println();
 
-  
-  if(strncmp((char*)payload, "UNLOCKED", len) == 0){
-    locked = false;
-    display_lock_state();
+  static boolean locked_previous = false;
+
+  // Create a JSON object to hold the message
+  // Note: size is limited by MQTT library
+  StaticJsonDocument<MQTT_MAX_PACKET_SIZE> inbound_JSON_message;
+
+  // Copy the message into the JSON object
+  deserializeJson(inbound_JSON_message, payload);
+
+  if(inbound_JSON_message.containsKey("state")){
+
+    Serial.println("[MQTTT] Payload is JSON with state");
+
+    // Check what the command is and act accordingly
+    // Use strdup so as to use strlwr later on
+    char* command = strdup(inbound_JSON_message["state"]);
+
+    if( strcmp(strlwr(command), "locked") == 0 ) {
+      locked = true;
+    }
+    else if( strcmp(strlwr(command), "unlocked") == 0 ) {
+      locked = false;
+    }
+
+    free(command);
+
   }
-  else if(strncmp((char*)payload, "LOCKED",len) == 0){
-    locked = true;
+
+
+  if(locked != locked_previous){
+    locked_previous = locked;
     display_lock_state();
+    buzzer_lock_state_changed();
   }
   
 }
@@ -80,11 +107,35 @@ void MQTT_message_callback(char* topic, byte* payload, unsigned int len) {
 
 void MQTT_publish_toggle(){
   //Send the payload
+
+  StaticJsonDocument<MQTT_MAX_PACKET_SIZE> outbound_JSON_message;
+  
   if(locked) {
-    MQTT_client.publish(MQTT_LOCK_COMMAND_TOPIC, "UNLOCK", MQTT_RETAIN);
+    outbound_JSON_message["state"] = "unlocked";
   }
   else {
-    MQTT_client.publish(MQTT_LOCK_COMMAND_TOPIC, "LOCK", MQTT_RETAIN);
+    outbound_JSON_message["state"] = "locked";
   }
+
+  char mqtt_payload[MQTT_MAX_PACKET_SIZE];
+  serializeJson(outbound_JSON_message, mqtt_payload, sizeof(mqtt_payload));
+
+  MQTT_client.publish(MQTT_LOCK_COMMAND_TOPIC, mqtt_payload, MQTT_RETAIN);
+  
+}
+
+void MQTT_publish_location(){
+  // Inform the home automation system that the user is outside
+
+  StaticJsonDocument<MQTT_MAX_PACKET_SIZE> outbound_JSON_message;
+  
+  if(!locked) {
+    outbound_JSON_message["location"] = "out";
+  }
+
+  char mqtt_payload[MQTT_MAX_PACKET_SIZE];
+  serializeJson(outbound_JSON_message, mqtt_payload, sizeof(mqtt_payload));
+
+  MQTT_client.publish(MQTT_LOCATION_TOPIC, mqtt_payload, MQTT_RETAIN);
   
 }
