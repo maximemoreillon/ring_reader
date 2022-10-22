@@ -1,11 +1,7 @@
 void buzzer_init() {
   pinMode(BUZZER_PIN, OUTPUT);
-  
   digitalWrite(BUZZER_PIN, LOW);
-
   analogWrite(BUZZER_PIN, 0);
-
-
 }
 
 
