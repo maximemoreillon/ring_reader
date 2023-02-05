@@ -1,7 +1,7 @@
-/*
- * Board type: Generic ESP8266
- */
 
+/*
+ * Board type: Wemos D1 mini
+ */
 // Libraries
 #include <SoftwareSerial.h>
 #include <ESP8266WiFi.h>
@@ -13,7 +13,7 @@
 
 // Config
 #include "credentials.h"
-#include "iot_config_home.h"; // MQTT broker URL + connection config
+#include "iot_config_home.h" // MQTT broker URL + connection config
 
 // Import fonts and images for the display
 #include "font.h"
@@ -21,7 +21,7 @@
 
 //Device info
 #define DEVICE_TYPE "door-reader"
-#define DEVICE_FIRMWARE_VERSION "0.1.9"
+#define DEVICE_FIRMWARE_VERSION "0.2.1"
 
 // IO
 #define RX_PIN D5
@@ -44,8 +44,7 @@
 // MQTT parameters
 #define MQTT_LOCK_COMMAND_TOPIC "lock/command"
 #define MQTT_LOCK_STATUS_TOPIC "lock/status"
-#define MQTT_LOCATION_TOPIC "location"
-
+#define MQTT_EVENTS_TOPIC "/ring-reader/events"
 #define MQTT_RETAIN true
 #define MQTT_RECONNECT_PERIOD 1000
 
@@ -114,7 +113,7 @@ void loop() {
         
         if(result == 0) {
           display_check();
-          MQTT_publish_location();
+          MQTT_publish_event();
           MQTT_publish_toggle();
           buzzer_play_success();
         }

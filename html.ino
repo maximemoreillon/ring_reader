@@ -36,7 +36,6 @@ String get_html_header(){
 const String nav = ""
   "<nav>"
     "<a href='/'>Info</a>"
-    "<a href='/settings'>Settings</a>"
     "<a href='/update'>Firmware update</a>"
   "</nav>";
 

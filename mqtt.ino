@@ -124,18 +124,21 @@ void MQTT_publish_toggle(){
   
 }
 
-void MQTT_publish_location(){
-  // Inform the home automation system that the user is outside
+void MQTT_publish_event(){
+  // Publishing event for automation or logging
 
   StaticJsonDocument<MQTT_MAX_PACKET_SIZE> outbound_JSON_message;
   
-  if(!locked) {
-    outbound_JSON_message["location"] = "out";
+  if(locked) {
+    outbound_JSON_message["action"] = "unlocking";
+  }
+  else {
+    outbound_JSON_message["action"] = "locking";
   }
 
   char mqtt_payload[MQTT_MAX_PACKET_SIZE];
   serializeJson(outbound_JSON_message, mqtt_payload, sizeof(mqtt_payload));
 
-  MQTT_client.publish(MQTT_LOCATION_TOPIC, mqtt_payload, MQTT_RETAIN);
+  MQTT_client.publish(MQTT_EVENTS_TOPIC, mqtt_payload, MQTT_RETAIN);
   
 }
