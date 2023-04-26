@@ -72,6 +72,7 @@ void setup() {
   display_setup();
   display_image(logo);
   iot_kernel.init();
+  mqtt_config();
 
 }
 
@@ -100,6 +101,7 @@ void loop() {
       }
       
     }
+    // TODO: get screen back to logo after a certain time   
   }
     
 }
