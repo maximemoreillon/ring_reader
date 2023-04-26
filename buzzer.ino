@@ -1,33 +1,30 @@
 void buzzer_init() {
-  pinMode(BUZZER_PIN, OUTPUT);
   
-  digitalWrite(BUZZER_PIN, LOW);
+  pinMode(BUZZER_PIN,OUTPUT);
 
-  analogWrite(BUZZER_PIN, 0);
-
-
-}
-
-
-void tone_custom(int freq, int duration){
-  analogWriteFreq(freq);
-  analogWrite(BUZZER_PIN, BUZZER_VOLUME);
-  delay(duration);
-  analogWrite(BUZZER_PIN, 0);
+  // Setting up PWM
+  ledcSetup(BUZZER_CHANNEL, 2000, BUZZER_RESOLUTION);
+  ledcAttachPin(BUZZER_PIN, BUZZER_CHANNEL);
+  ledcWrite(BUZZER_CHANNEL, 0);
 }
 
 void buzzer_play_success(){
-  tone_custom(1800,100);
-  tone_custom(2300,100);
-  tone_custom(2500,500);
+
+  tone_custom(900,100);
+  tone_custom(1100,100);
+  tone_custom(1300,100);
+  tone_custom(1500,100);
+  delay(100);
+  tone_custom(1300,100);
+  tone_custom(1500,500);
+
+
 }
 
-void buzzer_lock_state_changed(){
-  tone_custom(2300,50);
-  delay(50);
-  tone_custom(2300,100);
+void buzzer_play_request_pending(){
+  tone_custom(1000,100);
+  delay(200);
 }
-
 
 void buzzer_play_error(){
 
@@ -35,4 +32,12 @@ void buzzer_play_error(){
   delay(100);
   tone_custom(300,500);
   
+}
+
+
+void tone_custom(int freq, int duration){
+  ledcWriteTone(BUZZER_CHANNEL, freq);
+  ledcWrite(BUZZER_CHANNEL, 125);
+  delay(duration);
+  ledcWrite(BUZZER_CHANNEL, 0);
 }

@@ -19,13 +19,13 @@ void send_packet(char payload[], int payload_length){
   // Sends a command packet to the reader
 
   // Flush Serial in case there was a response halfway through
-  swSer.flush();
+  Serial1.flush();
  
-  swSer.enableTx(true);
+//  Serial1.enableTx(true);
   for(int i=0; i<payload_length; i++){
-    swSer.write(payload[i]);
+    Serial1.write(payload[i]);
   }
-  swSer.enableTx(false);
+//  Serial1.enableTx(false);
 }
 
 byte format_para(byte address){
@@ -223,10 +223,10 @@ Response get_reader_response_sync() {
     if(millis() - start_time > READER_TIMEOUT) break;
   
     // if no byte available, do nothing
-    if (swSer.available()) {
+    if (Serial1.available()) {
       
       // The current byte
-      byte received_byte = (byte) swSer.read();
+      byte received_byte = (byte) Serial1.read();
   
       // A full response starts with STX (0x02)
       // Warning: DATA may also contain a 0x02
@@ -289,7 +289,7 @@ Response get_reader_response_sync() {
 
   // clear the serial buffer
   // Maybe not ideal or necessary
-  swSer.flush();
+  Serial1.flush();
 
   
    
