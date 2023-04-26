@@ -33,6 +33,7 @@
 #define CODE_ADDRESS 0x0b
 
 // MQTT parameters
+// Most likely unused now
 #define MQTT_LOCK_COMMAND_TOPIC "lock/command"
 #define MQTT_LOCK_STATUS_TOPIC "lock/status"
 #define MQTT_EVENTS_TOPIC "/ring-reader/events"
@@ -64,19 +65,12 @@ long displaying_lock_state_start_time;
 
 void setup() {
   
-  delay(100);
 	Serial.begin(115200);
-  Serial.println("");
-  Serial.println("Start");
-
-  //  Serial for the EM4305 reader
   Serial1.begin(9600, SERIAL_8N1, RX_PIN, TX_PIN);
 
   buzzer_init();
-
   display_setup();
   display_image(logo);
-  
   iot_kernel.init();
 
 }
@@ -87,8 +81,6 @@ void loop() {
 
   invert_display_periodically();
 
-
-
   int result = compare_em4100(code);
   if(result != -1){
     
@@ -96,9 +88,9 @@ void loop() {
       cooldown_start_time = millis();
       
       if(result == 0) {
+        mqtt_publish_valid_tag();
         display_check();
         buzzer_play_success();
-        mqtt_publish_valid_tag();
       }
       else if(result == 1) {
         display_cross();
